@@ -1,0 +1,46 @@
+version: '3.4'
+
+volumes:
+  web_data:
+    name: ${ODOO_CONTAINER}
+  db_data:
+    name: ${ODOO_CONTAINER}_db
+
+services:
+
+  odoo:
+    container_name: ${ODOO_CONTAINER}
+    image: odoo:14.0
+    ports:
+      - ${ODOO_PORT:-8069}:8069
+    volumes:
+      - web_data:/var/lib/odoo/
+      - "./modules:/mnt/extra-addons:rw"
+      - "./odoo.conf:/etc/odoo/odoo.conf:rw"
+
+    environment:
+    - USER=${POSTGRES_USER}
+    - PASSWORD=${POSTGRES_PASSWORD}
+
+  db:
+    container_name: ${ODOO_CONTAINER}_db
+    image: postgres:latest
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_DB=postgres
+
+
+  adminer:
+    image: adminer
+    container_name: ${ODOO_CONTAINER}_adminer
+    ports:
+      - ${ADMINER_PORT}:8080
+
+networks:
+  default:
+    external:
+      name: $DEFAULT_NETWORK
