@@ -10,7 +10,7 @@ services:
 
   odoo:
     container_name: ${ODOO_CONTAINER}
-    image: odoo:14.0
+    image: odoo:15.0
     ports:
       - ${ODOO_PORT:-8069}:8069
     volumes:
